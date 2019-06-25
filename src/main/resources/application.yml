@@ -30,3 +30,4 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+    open-in-view: true
