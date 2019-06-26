@@ -16,8 +16,9 @@ public interface StationJPA extends JpaRepository<StationEntity,Long> {
     long searchStaIdByStaName(String name);
 
     @Query(value = "select sr.station_id from station_route sr" +
-            " where sr.route_id=?1 and sr.position<?2 and sr.position>?3 ",nativeQuery = true)
-    Long[] searchStasByRouteAndPosition(Long id,int p1,int p2);
+            " where sr.route_id=?1 and sr.position<=?2 and sr.position>=?3 " +
+            "order by position ",nativeQuery = true)
+    List<Long> searchStasByRouteAndPosition(Long id,int p1,int p2);
 
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,7 @@ public class SRController {
     }
 
     @RequestMapping(path = "/getstraightsolution")
-    public String getStraightSolution(
+    public HashMap getStraightSolution(
             @RequestParam("st_sta") String startStation,
             @RequestParam("end_sta") String endStation){
         List<StationRouteEntity> stationRouteEntities=srjpa.findAll();
@@ -63,25 +64,21 @@ public class SRController {
                         flag=true;
                     }
                     if(flag){
-                        Long[] longs=stationJPA.searchStasByRouteAndPosition(e.getSRrouteId(),Math.max(staPos, endPos),Math.min(staPos,endPos));
-                        Arrays.sort(longs);
+                        List<Long> longs=stationJPA.searchStasByRouteAndPosition(e.getSRrouteId(),Math.max(staPos, endPos),Math.min(staPos,endPos));
+//                        Arrays.sort(longs);
                         if(staPos>endPos){
-                            Long[] ls=longs;
-                            for(int i=ls.length-1;i>=0;i--){
-                                longs[ls.length-1-i]=ls[i];
-                            }
+                            Collections.reverse(longs);
                         }
                         RouteEntity routeEntity1=routeJPA.findById(e.getSRrouteId()).get();
-//                        HashMap hashMap=new HashMap();
-//                        hashMap.put("routeObj", routeEntity1);
-//                        hashMap.put("staIds",longs);
-//                        return hashMap;
-                        return routeEntity1.getRouteName();
+                        HashMap hashMap=new HashMap();
+                        hashMap.put("routeObj", routeEntity1);
+                        hashMap.put("staIds",longs);
+                        return hashMap;
                     }
                 }
             }
         }
-        return "";
+        return null;
     }
 
     @RequestMapping(path = "/addsr")
