@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Table(name = "station")
 public class StationEntity implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "station_id")
     private long stationId;
 

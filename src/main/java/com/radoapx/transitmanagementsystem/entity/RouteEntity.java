@@ -10,7 +10,7 @@ import javax.persistence.Table;
 public class RouteEntity implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "route_id")
     private long routeId;
 
