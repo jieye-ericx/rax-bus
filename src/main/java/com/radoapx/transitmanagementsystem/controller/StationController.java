@@ -16,12 +16,12 @@ public class StationController {
     @Autowired
     private StationJPA stationJPA;
 
-    @RequestMapping(path = "/getallpoints")
+    @RequestMapping(path = "/getallstations")
     public List<StationEntity> getALLPoints(){
         return stationJPA.findAll();
     }
 
-    @RequestMapping(path = "/getS")
+    @RequestMapping(path = "/getonestationbyname")
     public long getS(@RequestParam("name") String name){
         return stationJPA.searchStaIdByStaName(name);
     }

@@ -13,17 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
-import sun.security.util.Length;
 
 @RestController
 @RequestMapping(path = "/get")
@@ -41,6 +34,7 @@ public class SRController {
         return srjpa.findAll();
     }
 
+    @Deprecated
     @RequestMapping(path = "/getstraightsolution")
     public HashMap getStraightSolution(
             @RequestParam("st_sta") String startStation,
@@ -96,4 +90,34 @@ public class SRController {
         srjpa.save(stationRouteEntity);
         return stationRouteEntity;
     }
+
+    @RequestMapping(path = "/getbestsolution")
+    public HashMap getBestSolution(
+            @RequestParam("st_sta") String startStation,
+            @RequestParam("end_sta") String endStation
+    ){
+        long startId=stationJPA.searchStaIdByStaName(startStation);
+        long endId=stationJPA.searchStaIdByStaName(endStation);
+        long[][] zero=srjpa.getTransitStraight(startId, endId);
+        long[][] once=srjpa.getTransitOnce(startId, endId);
+        long[][] twice=srjpa.getTransitTwice(startId, endId);
+        if(0==zero.length&&0==once.length&&0==twice.length) return null;
+
+        HashMap hashMap=new HashMap();
+        if(0!=zero.length) hashMap.put("zero", zero[0]);
+        if(0!=once.length) hashMap.put("once",once[0] );
+        if(0!=twice.length) hashMap.put("twice", twice[0]);
+        return hashMap;
+
+//        return zero.length+"/"+once.length+"/"+twice.length;
+    }
+
+    @RequestMapping(path = "/getspecroute")
+    public int[] getSpecRoute(
+            @RequestParam("rid") long rouID){
+        return srjpa.getSpecRoute(rouID);
+    }
+
+
+
 }

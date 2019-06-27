@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
+
 import sun.awt.RepaintArea;
 
 @RestController
@@ -32,5 +35,10 @@ public class RouteController {
         routeEntity.setRouteEndTime(endTime);
         routeJPA.save(routeEntity);
         return routeEntity;
+    }
+
+    @RequestMapping(path = "/getallroutes")
+    public List<RouteEntity> getAllRoute(){
+        return routeJPA.findAll();
     }
 }
