@@ -9,6 +9,7 @@ import com.radoapx.transitmanagementsystem.jpa.StationJPA;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/get")
 public class SRController {
