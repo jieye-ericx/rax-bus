@@ -58,7 +58,7 @@ public class RouteController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车站id", required = true, dataType = "long")
     })
-    @RequestMapping(path = "/deleterou",method = RequestMethod.DELETE)
+    @RequestMapping(path = "/deleterou")
     public void deleteRoute(
             @RequestParam(value = "id") long id
     ){
