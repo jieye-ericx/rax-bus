@@ -64,7 +64,7 @@ public class StationController {
         return stationEntity;
     }
 
-    @ApiOperation(value = "根据车站id删除数据")
+    @ApiOperation(value = "根据车站id删除数据",httpMethod = "Post")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车站id", required = true, dataType = "long")
     })
