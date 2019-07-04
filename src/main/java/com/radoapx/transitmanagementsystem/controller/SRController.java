@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+@Api(value = "主要操作路线与站点相关的控制器")
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/get")
@@ -30,13 +37,14 @@ public class SRController {
     @Autowired
     private RouteJPA routeJPA;
 
-    @RequestMapping(path = "/getallsr")
+    @ApiOperation(value = "获得所有路线站点信息")
+    @RequestMapping(path = "/getallsr",method = RequestMethod.GET)
     public List<StationRouteEntity> getAllFromSR(){
         return srjpa.findAll();
     }
 
     @Deprecated
-    @RequestMapping(path = "/getstraightsolution")
+    @RequestMapping(path = "/getstraightsolution",method = RequestMethod.POST)
     public HashMap getStraightSolution(
             @RequestParam("st_sta") String startStation,
             @RequestParam("end_sta") String endStation){
@@ -76,7 +84,14 @@ public class SRController {
         return null;
     }
 
-    @RequestMapping(path = "/addsr")
+    @ApiOperation(value = "增加路线站点绑定信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="post", name = "rid", value = "路线id", required = true, dataType = "long"),
+            @ApiImplicitParam(paramType="post", name = "sid", value = "车站id", required = true, dataType = "long"),
+            @ApiImplicitParam(paramType="post", name = "position", value = "路线中车站位置", required = true, dataType = "int"),
+            @ApiImplicitParam(paramType = "post",name = "remark",value = "路线备注",required = false,defaultValue = "null",dataType = "String")
+    })
+    @RequestMapping(path = "/addsr",method = RequestMethod.POST)
     public StationRouteEntity addSR(
             @RequestParam("rid") long routeId,
             @RequestParam("sid") long stationId,
@@ -92,7 +107,12 @@ public class SRController {
         return stationRouteEntity;
     }
 
-    @RequestMapping(path = "/getbestsolution")
+    @ApiOperation(value = "输入起点站终点站获得路径")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="post", name = "st_sta", value = "起点站名称", required = true, dataType = "String"),
+            @ApiImplicitParam(paramType="post", name = "end_sta", value = "终点站名称", required = true, dataType = "String"),
+    })
+    @RequestMapping(path = "/getbestsolution",method = RequestMethod.POST)
     public HashMap getBestSolution(
             @RequestParam("st_sta") String startStation,
             @RequestParam("end_sta") String endStation
@@ -113,7 +133,11 @@ public class SRController {
 //        return zero.length+"/"+once.length+"/"+twice.length;
     }
 
-    @RequestMapping(path = "/getspecroute")
+    @ApiOperation(value = "输入路线id获得其经过的车站id")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType="post", name = "rid", value = "路线id", required = true, dataType = "long"),
+    })
+    @RequestMapping(path = "/getspecroute",method = RequestMethod.POST)
     public int[] getSpecRoute(
             @RequestParam("rid") long rouID){
         return srjpa.getSpecRoute(rouID);

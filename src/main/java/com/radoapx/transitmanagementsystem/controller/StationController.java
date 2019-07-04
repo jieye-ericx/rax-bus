@@ -4,12 +4,18 @@ import com.radoapx.transitmanagementsystem.entity.StationEntity;
 import com.radoapx.transitmanagementsystem.jpa.StationJPA;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin
 @RestController
@@ -18,18 +24,30 @@ public class StationController {
     @Autowired
     private StationJPA stationJPA;
 
-    @RequestMapping(path = "/getallstations")
+    @ApiOperation(value = "获得所有车站对象")
+    @RequestMapping(path = "/getallstations",method = RequestMethod.GET)
     public List<StationEntity> getALLPoints(){
         return stationJPA.findAll();
     }
 
-    @RequestMapping(path = "/getonestationbyname")
+    @ApiOperation(value = "通过名称获得车站对象")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "车站名", required = true, dataType = "String")
+    })
+    @RequestMapping(path = "/getonestationbyname",method = RequestMethod.GET)
     public long getS(@RequestParam("name") String name){
         return stationJPA.searchStaIdByStaName(name);
     }
 
 
-    @RequestMapping(path = "/addsta")
+    @ApiOperation(value = "添加车站")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "车站名", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "x", value = "坐标x", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "y", value = "坐标y", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "remark", value = "备注", required = true, dataType = "String")
+    })
+    @RequestMapping(path = "/addsta",method = RequestMethod.POST)
     public StationEntity addStation(
             @RequestParam(value = "name")String name,
             @RequestParam(value = "x")String x,
@@ -44,5 +62,16 @@ public class StationController {
         stationEntity.setStationRemark(remark);
         stationJPA.save(stationEntity);
         return stationEntity;
+    }
+
+    @ApiOperation(value = "根据车站id删除数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "车站id", required = true, dataType = "long")
+    })
+    @RequestMapping(path = "/deletesta",method = RequestMethod.DELETE)
+    public void deleteStation(
+            @RequestParam(value = "id") long id
+    ){
+        stationJPA.deleteById(id);
     }
 }

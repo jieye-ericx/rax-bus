@@ -20,5 +20,4 @@ public interface StationJPA extends JpaRepository<StationEntity,Long> {
             "order by position ",nativeQuery = true)
     List<Long> searchStasByRouteAndPosition(Long id,int p1,int p2);
 
-
 }
