@@ -38,7 +38,7 @@ public class SRController {
     private RouteJPA routeJPA;
 
     @ApiOperation(value = "获得所有路线站点信息")
-    @RequestMapping(path = "/getallsr",method = RequestMethod.GET)
+    @RequestMapping(path = "/getallsr")
     public List<StationRouteEntity> getAllFromSR(){
         return srjpa.findAll();
     }
@@ -91,7 +91,7 @@ public class SRController {
             @ApiImplicitParam(paramType="post", name = "position", value = "路线中车站位置", required = true, dataType = "int"),
             @ApiImplicitParam(paramType = "post",name = "remark",value = "路线备注",required = false,defaultValue = "null",dataType = "String")
     })
-    @RequestMapping(path = "/addsr",method = RequestMethod.POST)
+    @RequestMapping(path = "/addsr")
     public StationRouteEntity addSR(
             @RequestParam("rid") long routeId,
             @RequestParam("sid") long stationId,
@@ -109,10 +109,10 @@ public class SRController {
 
     @ApiOperation(value = "输入起点站终点站获得路径")
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType="post", name = "st_sta", value = "起点站名称", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType="post", name = "end_sta", value = "终点站名称", required = true, dataType = "String"),
+            @ApiImplicitParam( name = "st_sta", value = "起点站名称", required = true),
+            @ApiImplicitParam( name = "end_sta", value = "终点站名称", required = true)
     })
-    @RequestMapping(path = "/getbestsolution",method = RequestMethod.POST)
+    @RequestMapping(path = "/getbestsolution")
     public HashMap getBestSolution(
             @RequestParam("st_sta") String startStation,
             @RequestParam("end_sta") String endStation
@@ -137,7 +137,7 @@ public class SRController {
     @ApiImplicitParams({
             @ApiImplicitParam(paramType="post", name = "rid", value = "路线id", required = true, dataType = "long"),
     })
-    @RequestMapping(path = "/getspecroute",method = RequestMethod.POST)
+    @RequestMapping(path = "/getspecroute")
     public int[] getSpecRoute(
             @RequestParam("rid") long rouID){
         return srjpa.getSpecRoute(rouID);

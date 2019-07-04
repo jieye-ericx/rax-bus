@@ -25,7 +25,7 @@ public class StationController {
     private StationJPA stationJPA;
 
     @ApiOperation(value = "获得所有车站对象")
-    @RequestMapping(path = "/getallstations",method = RequestMethod.GET)
+    @RequestMapping(path = "/getallstations")
     public List<StationEntity> getALLPoints(){
         return stationJPA.findAll();
     }
@@ -34,7 +34,7 @@ public class StationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name", value = "车站名", required = true, dataType = "String")
     })
-    @RequestMapping(path = "/getonestationbyname",method = RequestMethod.GET)
+    @RequestMapping(path = "/getonestationbyname")
     public long getS(@RequestParam("name") String name){
         return stationJPA.searchStaIdByStaName(name);
     }
@@ -47,7 +47,7 @@ public class StationController {
             @ApiImplicitParam(name = "y", value = "坐标y", required = true, dataType = "String"),
             @ApiImplicitParam(name = "remark", value = "备注", required = true, dataType = "String")
     })
-    @RequestMapping(path = "/addsta",method = RequestMethod.POST)
+    @RequestMapping(path = "/addsta")
     public StationEntity addStation(
             @RequestParam(value = "name")String name,
             @RequestParam(value = "x")String x,
@@ -68,7 +68,7 @@ public class StationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车站id", required = true, dataType = "long")
     })
-    @RequestMapping(path = "/deletesta",method = RequestMethod.DELETE)
+    @RequestMapping(path = "/deletesta")
     public void deleteStation(
             @RequestParam(value = "id") long id
     ){

@@ -32,7 +32,7 @@ public class RouteController {
             @ApiImplicitParam(name = "sttime", value = "首班时间", required = true, dataType = "String"),
             @ApiImplicitParam(name = "endtime", value = "末班时间", required = true, dataType = "String")
     })
-    @RequestMapping(path = "/addrou",method = RequestMethod.POST)
+    @RequestMapping(path = "/addrou")
     public RouteEntity addRoute(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "remark",defaultValue = "") String remark,
@@ -49,7 +49,7 @@ public class RouteController {
     }
 
     @ApiOperation(value = "获得所有路线")
-    @RequestMapping(path = "/getallroutes",method = RequestMethod.GET)
+    @RequestMapping(path = "/getallroutes")
     public List<RouteEntity> getAllRoute(){
         return routeJPA.findAll();
     }
@@ -58,7 +58,7 @@ public class RouteController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车站id", required = true, dataType = "long")
     })
-    @RequestMapping(path = "/deleterou",method = RequestMethod.DELETE)
+    @RequestMapping(path = "/deleterou")
     public void deleteRoute(
             @RequestParam(value = "id") long id
     ){
