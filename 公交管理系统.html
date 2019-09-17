@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript"
+        src="http://api.map.baidu.com/api?v=2.0&ak=ryjvkITT8qit4q4UElYKNe3TAYzSpzLQ"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <title>添加/删除覆盖物</title>
+
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        *::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+
+
+        #allmap {
+            height: 618px;
+            float: left;
+        }
+
+        #nowroute,
+        #allstation {
+            width: 350px;
+            height: 813px;
+            /* background-color: #f2223f; */
+            float: left;
+            overflow-y: auto;
+
+        }
+
+        .trumangu-box {
+            margin-right: 20px;
+            min-width: 300px;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            box-shadow: 0px 1px 5px gray;
+        }
+
+        .trumangu-hr {
+            font-size: 22px;
+            font-weight: 600;
+            height: 40px;
+            margin-bottom: 20px;
+            line-height: 40px;
+            padding-bottom: 10px;
+        }
+
+        .search-form {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 20px 0px;
+        }
+
+        .search-form form {
+            flex: 4;
+        }
+
+        .search-form form .btn-default {
+            float: right;
+        }
+
+        .search-form form input {
+            width: 60%;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .form-group {
+            width: 97%;
+            margin: 0 auto 10px;
+        }
+
+        .search-form .buttom-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .navbar-default .navbar-nav>li>a:focus {
+            border-bottom: 1px solid #689f38;
+        }
+
+        .center-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: calc(100% - 700px);
+        }
+
+        #r-result {
+            width: 100%;
+        }
+
+        #fatherdiv1 {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .form-control {
+            width: 33%;
+            float: left;
+        }
+
+        .btn-sm {
+            padding: 7px 16px;
+            margin-left: 120px;
+        }
+
+        .table>tbody>tr>td,
+        .table>tbody>tr>th,
+        .table>tfoot>tr>td,
+        .table>tfoot>tr>th,
+        .table>thead>tr>td,
+        .table>thead>tr>th {
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">公交查询系统</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <!-- <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li> -->
+                        <li><a href="#" @click="displaySta">{{isDisplaySta}}</a></li>
+                        <li><a href="#" @click="addRou">{{isAddingRou}}</a></li>
+                        <li><a href="#" @click="deleteSta">{{isDeletingSta}}</a></li>
+                        <li><a href="#" @click="deleteRou">{{isDeletingRou}}</a></li>
+                    </ul>
+
+
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <!-- <div class="c-nav">
+            <div class="container navFlex">
+                <div class="flexItem show">
+                    <ul>
+                        <li><a href="#" @click="displaySta">{{isDisplaySta}}</a></li>
+                        <li><a href="#" @click="addRou">{{isAddingRou}}</a></li>
+                        <li><a href="#" @click="deleteSta">{{isDeletingSta}}</a></li>
+                        <li><a href="#" @click="deleteRou">{{isDeletingRou}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div> -->
+        <div id="fatherdiv1">
+            <div id="allstation" class="trumangu-box">
+                <div class="trumangu-hr">
+                    车站列表
+                </div>
+                <div style="height: 700px; overflow-y:auto">
+                    <table class="table table-hover">
+                        <tbody id="itbody">
+                            <tr v-for="x in stations" :id="x.stationId" @click="operateStaClick(x.stationId)">
+                                <td>{{x.stationName}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <section class="center-box">
+                <div id="allmap" class="trumangu-box"></div>
+                <section class="search-form trumangu-box">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="st_sta" class="col-sm-2 control-label">起点站</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="st_sta" placeholder="输入起点站"
+                                    v-model="stastation">
+                                <button type="button" class="btn btn-default" :disabled="isZero"
+                                    @click="showZero">直达线路</button>
+
+                                <!-- <input type="text" v-model="isDisplaySta" disabled> -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_sta" class="col-sm-2 control-label">终点站</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="end_sta" placeholder="输入终点站"
+                                    v-model="endstation">
+                                <button type="button" class="btn btn-default" :disabled="isOnce"
+                                    @click="showOnce">换乘一次</button>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <!-- <input type="text" v-model="isDisplaySta" disabled> -->
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="button" class="btn" @click="searchWay">搜索路线</button>
+                                <button type="button" class="btn btn-default" :disabled="isTwice"
+                                    @click="showTwice">换乘两次</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- <input type="text" v-model="isDisplaySta" disabled> -->
+                    <!-- 搜索路径结束 -->
+                </section>
+            </section>
+            <div id="nowroute" class="trumangu-box">
+                <div class="trumangu-hr">
+                    当前线路
+                </div>
+                <div style="height: 700px; overflow-y:auto">
+                    <table class="table table-hover">
+                        <thead>
+                            <td>线路</td>
+                            <td>始发时间</td>
+                            <td>末班时间</td>
+                        </thead>
+                        <tbody id="itbody">
+                            <!-- <tr v-for="(val,key,i) in routes" :id="i">{{val}}-{{key}}-{{i}}</tr> -->
+                            <tr v-for="x in routes" :id="x.routeId"
+                                @click="isInDeletingRou? deleteRouById(x.routeId):showRoute(x.routeId)">
+                                <td>{{x.routeName}}</td>
+                                <td>{{x.routeStartTime}}</td>
+                                <td>{{x.routeEndTime}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- 搜索路径 -->
+
+    </div>
+</body>
+
+
+</html>
+
+<script>
+    //api地址----------------------------------------
+    // const serverRoot = 'http://localhost:8080'
+    var serverRoot = 'http://47.112.1.235:8080'
+    var get = serverRoot + '/get'
+    //------------------------SR
+    //拿到所有的路线绑定信息
+    var getAllSR = get + '/getallsr'
+    // 增加路线绑定 thistimerouteid sid position //remark
+    var addSR = get + '/addsr'
+    // 获得最佳路线 st_sta end_sta
+    // 0 route 1 startSta 2 endSta 3 pos
+
+    // 0 startSta 1 route0 2 posNeed0 3 transferSta0
+    // 4 route1 5 posNeed1 6 endSta
+
+    // 0 startSta 1 route0 2 posNeed0 3 transferSta0
+    // 4 route1 5 posNeed1 6 transferSta1 7 route2
+    // 8 posNeed2 9 endSta
+    var getBestSolution = get + '/getbestsolution'
+    // 获得一条线路的车站顺序id thistimerouteid 
+    var getSpecRoute = get + '/getspecroute'
+    //-------------Route
+    var route = serverRoot + '/rou'
+    //增加路线
+    var addRou = route + '/addrou'
+    //得到所有路线
+    var getAllRoutes = route + '/getallroutes'
+    //删除路线
+    var deleteRou = route + '/deleterou'
+    //--------------Station
+    var station = serverRoot + '/sta'
+    //获得所有站点
+    var getAllStations = station + '/getallstations'
+    //通过名字拿到站点id name
+    var getOneStationByName = station + '/getonestationbyname'
+    //添加站点 name x y //remark
+    var addSta = station + '/addsta'
+    //删除站点
+    var deleteSta = station + '/deletesta'
+    //api地址-------------------------------------------------
+
+    //Vue实例-------------------------------------------------
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            isInDeletingSta: false,
+            isInDeletingRou: false,
+            isInAddingRou: false,
+            isDisplaySta: '显示车站',
+            isDeletingSta: '删除车站',
+            isDeletingRou: '删除路线',
+            isAddingRou: '新增路线',
+            stations: null,
+            stanum: 0,
+            routes: null,
+            rounum: 0,
+            srs: 0,
+            stastation: '',
+            endstation: '',
+            way: null,
+            polyline0: null,
+            polyline1: null,
+            polyline2: null,
+            isZero: true,
+            isOnce: true,
+            isTwice: true,
+            rouArr: [],
+            rouInfo: { "name": '', "sttime": '', "endtime": '', "remark": '' }
+        },
+        methods: {
+            displaySta() {
+                if (this.isDisplaySta == '显示车站') {
+                    this.isDisplaySta = '刷新地图'
+                    for (var i = 0; i < this.stations.length; i++) {
+                        var point = new BMap.Point(this.stations[i].stationLoc_x, this.stations[i].stationLoc_y)
+                        var marker = new BMap.Marker(point, { enableMassClear: false })
+                        marker.setTitle(this.stations[i].stationName)
+                        marker.addContextMenu(markermenu)
+                        map.addOverlay(marker)
+                        // console.log(stations[i].stationLoc_x + ' ' + stations[i].stationLoc_y)
+                    }
+                } else {
+                    this.isDisplaySta = '显示车站'
+                    initMap()
+                }
+            },
+            clear() {
+                map.clearOverlays()
+            },
+            getStaOrder(routeId) {
+                var staOrder = []
+                for (var i = 0; i < this.srs.length; i++) {
+                    if (srs[i].srrouteId == routeId)
+                        staOrder.push({ "staid": srs[i].srstationId, "pos": srs[i].srposition })
+                }
+                // console.log(staOrder)
+                staOrder.sort(function (a, b) {
+                    return a.pos - b.pos
+                })
+                return staOrder
+            },
+            showRoute(routeId) {
+                this.clear()
+                var staOrder = this.getStaOrder(routeId)
+                var points = []
+                for (var i = 0; i < staOrder.length; i++) {
+                    for (var j = 0; j < this.stations.length; j++) {
+                        if (staOrder[i].staid == this.stations[j].stationId) {
+                            var point = new BMap.Point(this.stations[j].stationLoc_x, this.stations[j].stationLoc_y)
+                            points.push(point)
+                            var marker = new BMap.Marker(point)
+                            marker.setLabel(new BMap.Label(this.stations[j].stationName))
+                            map.addOverlay(marker)
+                            break
+                        }
+                    }
+                }
+                var polyline = new BMap.Polyline(points, { strokeColor: "blue", strokeWeight: 5, strokeOpacity: 0 })
+                map.addOverlay(polyline)
+            },
+            staCli(staid) {
+                // console.log(staid)
+                this.clear()
+                for (var i = 0; i < this.stations.length; i++) {
+                    // console.log(x.stationName)
+
+                    if (this.stations[i].stationId == staid) {
+                        var marker = new BMap.Marker(new BMap.Point(this.stations[i].stationLoc_x, this.stations[i].stationLoc_y))
+                        // marker.setLabel(new BMap.Label(this.stations[i].stationName))
+                        marker.setTitle(this.stations[i].stationName)
+                        marker.setLabel(new BMap.Label(this.stations[i].stationName))
+                        console.log(markermenu)
+                        marker.addContextMenu(markermenu)
+                        map.addOverlay(marker)
+                        break
+                    }
+                }
+            },
+            searchWay() {
+                var staid = -1
+                for (var i = 0; i < this.stations.length; i++) {
+                    if (this.stations[i].stationName == this.stastation) {
+                        staid = this.stations[i].stationId
+                    }
+                }
+                var endid = -1
+                for (var i = 0; i < this.stations.length; i++) {
+                    if (this.stations[i].stationName == this.endstation) {
+                        endid = this.stations[i].stationId
+                    }
+                }
+                if (endid == -1 || staid == -1 || staid == endid) {
+                    alert('输入车站有误')
+                } else {
+                    axios.get(getBestSolution + '?st_sta=' + this.stastation + '&end_sta=' + this.endstation)
+                        .then(data => {
+                            way = data.data
+                        })
+                    var self = this
+                    setTimeout(function () {
+                        if (null == way["zero"]) self.isZero = true
+                        else self.isZero = false
+                        if (null == way["once"]) self.isOnce = true
+                        else self.isOnce = false
+                        if (null == way["twice"]) self.isTwice = true
+                        else {
+                            self.isTwice = false
+                        }
+
+                        if (null != way["zero"]) {
+                            self.showZero()
+                            // 0 route 1 startSta 2 endSta 3 pos
+                        } else if (null != way["once"]) {
+                            self.showOnce()
+                        } else if (null != way["twice"]) {
+                            self.showTwice()
+                        }
+                    }, 500)
+                }
+            },
+            showOneRoute(oneRouteId, positionNum, startStation, endStation, color) {
+                var staOrder = this.getStaOrder(oneRouteId)
+                console.log('staOrder:' + staOrder)
+                var stas = []//按顺序存放站点id
+                for (var i = 0; i < staOrder.length; i++) {
+                    if (staOrder[i].staid == startStation) {//起点id相同
+                        if (i >= positionNum && staOrder[i - positionNum].staid == endStation) {
+                            for (var o = i; o >= i - positionNum; o--) {
+                                stas.push(staOrder[o].staid)
+                            }
+                        } else if (staOrder[i + positionNum].staid == endStation) {
+                            for (var o = i; o <= i + positionNum; o++) {
+                                stas.push(staOrder[o].staid)
+                            }
+                        }
+                        break
+                    }
+                }
+                console.log('stas:' + stas)
+                var points = []
+                for (var i = 0; i < stas.length; i++) {
+                    for (var j = 0; j < this.stations.length; j++) {
+                        if (stas[i] == this.stations[j].stationId) {
+                            var point = new BMap.Point(this.stations[j].stationLoc_x, this.stations[j].stationLoc_y)
+                            points.push(point)
+                            var marker = new BMap.Marker(point)
+                            marker.setLabel(new BMap.Label(this.stations[j].stationName))
+                            map.addOverlay(marker)
+                            break
+                        }
+                    }
+                }
+                var sy = new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_OPEN_ARROW, {
+                    scale: 0.6,//图标缩放大小
+                    strokeColor: '#fff',//设置矢量图标的线填充颜色
+                    strokeWeight: '2',//设置线宽
+                });
+                var icons = new BMap.IconSequence(sy, '10', '30');
+                polyline = new BMap.Polyline(points, { strokeColor: color, strokeWeight: 10, strokeOpacity: 0, icons: [icons] })
+                map.addOverlay(polyline)
+            },
+            showZero() {
+                var self = this
+                this.clear()
+                this.showOneRoute(way["zero"][0], way["zero"][3], way["zero"][1], way["zero"][2], 'blue')
+                setTimeout(function () {
+                    alert('乘坐' + self.getRouName(way["zero"][0]))
+                }, 100)
+            },
+            // 0 startSta 1 route0 2 posNeed0 3 transferSta0
+            // 4 route1 5 posNeed1 6 endSta
+            showOnce() {
+                var self = this
+                this.clear()
+                this.showOneRoute(way["once"][1], way["once"][2], way["once"][0], way["once"][3], 'blue')
+                this.showOneRoute(way["once"][4], way["once"][5], way["once"][3], way["once"][6], 'green')
+                setTimeout(function () {
+                    alert('先乘坐' + self.getRouName(way["once"][1]) + '\n再乘坐' + self.getRouName(way["once"][4]))
+                }, 100)
+            },
+            // 0 startSta 1 route0 2 posNeed0 3 transferSta0
+            // 4 route1 5 posNeed1 6 transferSta1 7 route2
+            // 8 posNeed2 9 endSta
+            showTwice() {
+                var self = this
+
+                this.clear()
+                this.showOneRoute(way["twice"][1], way["twice"][2], way["twice"][0], way["twice"][3], 'blue')
+                this.showOneRoute(way["twice"][4], way["twice"][5], way["twice"][3], way["twice"][6], 'green')
+                this.showOneRoute(way["twice"][7], way["twice"][8], way["twice"][6], way["twice"][9], 'red')
+                setTimeout(function () {
+                    alert('先乘坐' + self.getRouName(way["twice"][1]) +
+                        '\n再乘坐' + self.getRouName(way["twice"][4]) +
+                        '\n再乘坐' + self.getRouName(way["twice"][7])
+                    )
+                }, 100)
+            },
+            getRouName(rid) {
+                for (var i = 0; i < this.routes.length; i++) {
+                    if (this.routes[i].routeId == rid) return this.routes[i].routeName
+                }
+            },
+            deleteSta() {
+                if (this.isDeletingSta == '删除车站') {
+                    this.isDeletingSta = '结束删除'
+                    this.isInDeletingSta = true
+                } else {
+                    this.isDeletingSta = '删除车站'
+                    this.isInDeletingSta = false
+                }
+            },
+            deleteStaById(sid) {
+                for (var i = 0; i < this.stations.length; i++) {
+                    if (this.stations[i].stationId == sid) {
+                        this.stations.splice(i, 1)
+                        axios.get(deleteSta + '?id=' + sid)
+                        return
+                    }
+                }
+            },
+            deleteRou() {
+                if (this.isDeletingRou == '删除路线') {
+                    this.isDeletingRou = '结束删除'
+                    this.isInDeletingRou = true
+                } else {
+                    this.isDeletingRou = '删除路线'
+                    this.isInDeletingRou = false
+                }
+            },
+            deleteRouById(rid) {
+                for (var i = 0; i < this.routes.length; i++) {
+                    if (this.routes[i].routeId == rid) {
+                        this.routes.splice(i, 1)
+                        axios.get(deleteRou + '?id=' + rid)
+                        return
+                    }
+                }
+            },
+            addRou() {
+                if (this.isAddingRou === '新增路线') {
+                    this.isAddingRou = '结束'
+                    this.isInAddingRou = true
+                    this.rouInfo.name = prompt('输入路线名', 'routename')
+                    console.log('1223 ' + name)
+                    this.rouInfo.sttime = prompt('输入开始时间', 'starttime')
+                    this.rouInfo.endtime = prompt('输入结束时间', 'endtime')
+                    this.rouInfo.remark = prompt('输入备注', 'remark')
+                } else {
+                    this.isAddingRou = '新增路线'
+                    this.isInAddingRou = false
+                    console.log(name)
+                    axios.get(addRou + '?name=' + this.rouInfo.name + '&sttime=' + this.rouInfo.sttime + '&endtime=' + this.rouInfo.endtime
+                        + '&remark=' + this.rouInfo.remark).then(data => {
+                            console.log(data.data)
+                            this.routes.push(data.data)
+                            var newR = data.data
+                            for (var i = 0; i < this.rouArr.length; i++) {
+                                axios.get(addSR + '?position=' + (i + 1)
+                                    + '&remark=null' + '&rid=' + newR.routeId + '&sid=' + this.rouArr[i]
+                                ).then(data => {
+                                    this.srs.push(data.data)
+                                })
+                            }
+                            this.rouArr = []
+                        })
+                }
+            },
+            operateStaClick(x) {
+                if (this.isInAddingRou == true) {
+                    this.rouArr.push(x)
+                } else if (this.isInDeletingSta == true) {
+                    this.deleteStaById(x)
+                } else {
+                    this.staCli(x)
+                }
+            }
+        }
+    })
+    //Vue实例-------------------------------------------------
+
+    //地图实例基本设置----------------------------------------
+    var getData = function () {
+        axios.get(getAllStations)
+            .then(data => {
+                //console.log(data.data[0].stationLoc_x)
+                vm.stations = data.data
+                vm.stanum = data.data.length
+                stations = data.data
+                //return data.data
+            })
+        axios.get(getAllRoutes)
+            .then(data => {
+                vm.routes = data.data
+                vm.rounum = data.data.length
+            })
+        axios.get(getAllSR)
+            .then(data => {
+                srs = data.data
+                vm.srs = data.data
+            })
+    }
+    var map
+    var mapmenu
+    var markermenu
+    var initMap = function () {
+        map = new BMap.Map("allmap")
+        var point = new BMap.Point(118.79078, 32.047821)
+        map.centerAndZoom(point, 13)//设置初始化中心点以及放大等级
+        map.enableScrollWheelZoom()
+        map.enableKeyboard()
+        map.setMinZoom(12)//数值越大地图显示更细致
+        map.setMaxZoom(18)
+        // map.setMapStyleV2('8f998d237b67747e4a26d6e9fbbcae0b')
+        markermenu = new BMap.ContextMenu();//标注点右键菜单
+        var markerItem = [{
+            text: '删除该点',
+            callback: function (e) {
+                console.log(e)
+            }
+        }]
+        for (var i = 0; i < markerItem.length; i++) {
+            markermenu.addItem(new BMap.MenuItem(markerItem[i].text, markerItem[i].callback, 100));
+        }
+        mapmenu = new BMap.ContextMenu();//地图右键菜单 目前有增加车站
+        var txtMenuItem = [
+            {
+                text: '添加车站',
+                callback: function (e) {
+                    // console.log(e.lng)
+                    var name = prompt("请输入车站名称", "车站名");
+                    var remark = prompt("请输入备注", "null")
+                    // console.log(word)
+                    // stations.push({
+                    //     "stationId": 100,
+                    //     "stationLoc_x": e.lng,
+                    //     "stationLoc_y": e.lat,
+                    //     "stationName": name,
+                    //     "stationRemark": remark
+                    // })
+                    axios.get(addSta + '?name=' + name + '&remark=' + remark
+                        + '&x=' + e.lng + '&y=' + e.lat).then(data => {
+                            stations.push(data.data)
+                        })
+                }
+            }
+        ];
+        for (var i = 0; i < txtMenuItem.length; i++) {
+            mapmenu.addItem(new BMap.MenuItem(txtMenuItem[i].text, txtMenuItem[i].callback, 100));
+        }
+        map.addContextMenu(mapmenu);
+        // var dd=function(e){
+        //         alert(e.point.lng + "," + e.point.lat);
+        //     }
+        //     map.addEventListener("click",dd)
+        //     map.removeEventListener("click",dd)
+        getData()
+    }
+    initMap()
+    //地图实例基本设置end----------------------------------------
+    var stations//所有车站
+    var routes//所有路线
+    var srs//所有路线与站点的关系
+</script>
